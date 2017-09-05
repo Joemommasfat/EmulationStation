@@ -40,8 +40,18 @@ namespace FileSorts
 	bool compareName(const FileData* file1, const FileData* file2)
 	{
 		// we compare the actual metadata name, as collection files have the system appended which messes up the order
-		std::string name1 = file1->metadata.get("name");
-		std::string name2 = file2->metadata.get("name");
+		std::string name1;
+		std::string name2;
+                if(file1->metadata.get("sortname").empty()){
+		  name1 = file1->metadata.get("name");
+                } else {
+		  name1 = file1->metadata.get("sortname");
+                }
+                if(file2->metadata.get("sortname").empty()){
+		  name2 = file2->metadata.get("name");
+                } else {
+		  name2 = file2->metadata.get("sortname");
+                }
 		transform(name1.begin(), name1.end(), name1.begin(), ::toupper);
 		transform(name2.begin(), name2.end(), name2.begin(), ::toupper);
 		return name1.compare(name2) < 0;
