@@ -36,6 +36,7 @@ public:
 	virtual ~FileData();
 
 	virtual const std::string& getName();
+	virtual const std::string& getSortName();
 	inline FileType getType() const { return mType; }
 	inline const boost::filesystem::path& getPath() const { return mPath; }
 	inline FileData* getParent() const { return mParent; }

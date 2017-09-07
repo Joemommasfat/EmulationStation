@@ -21,7 +21,7 @@ GuiGamelistOptions::GuiGamelistOptions(Window* window, SystemData* system) : Gui
 		if (!isFiltered) {
 			// jump to letter
 			row.elements.clear();
-			char curChar = toupper(getGamelist()->getCursor()->getName()[0]);
+			char curChar = toupper(getGamelist()->getCursor()->getSortName()[0]);
 			if(curChar < 'A' || curChar > 'Z')
 				curChar = 'A';
 
@@ -196,11 +196,11 @@ void GuiGamelistOptions::jumpToLetter()
 		if(files.at(mid)->getName().empty())
 			continue;
 
-		char checkLetter = toupper(files.at(mid)->getName()[0]);
+		char checkLetter = toupper(files.at(mid)->getSortName()[0]);
 
 		if(checkLetter < letter)
 			min = mid + 1;
-		else if(checkLetter > letter || (mid > 0 && (letter == toupper(files.at(mid - 1)->getName()[0]))))
+		else if(checkLetter > letter || (mid > 0 && (letter == toupper(files.at(mid - 1)->getSortName()[0]))))
 			max = mid - 1;
 		else
 			break; //exact match found
