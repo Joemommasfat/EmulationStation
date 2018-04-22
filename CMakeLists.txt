@@ -50,13 +50,13 @@ find_package(Freetype REQUIRED)
 find_package(FreeImage REQUIRED)
 find_package(SDL2 REQUIRED)
 if(MSVC)
-find_package(Boost REQUIRED COMPONENTS system date_time locale)
+find_package(Boost REQUIRED COMPONENTS system date_time)
 else()
-find_package(Boost REQUIRED COMPONENTS system filesystem date_time locale)
+find_package(Boost REQUIRED COMPONENTS system filesystem date_time)
 endif()
-find_package(Eigen3 REQUIRED)
 find_package(CURL REQUIRED)
 find_package(VLC REQUIRED)
+find_package(libCEC)
 
 #add ALSA for Linux
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -69,12 +69,17 @@ if(DEFINED BCMHOST)
     add_definitions(-D_RPI_)
 endif()
 
+if(DEFINED libCEC_FOUND)
+    add_definitions(-DHAVE_LIBCEC)
+endif()
+
 #-------------------------------------------------------------------------------
 
 if(MSVC)
     set(CMAKE_DEBUG_POSTFIX "d")
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
     add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
+    add_definitions(-DNOMINMAX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP") #multi-processor compilation
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP") #multi-processor compilation
 endif()
@@ -102,8 +107,6 @@ else()
     add_definitions(-DUSE_OPENGL_ES)
 endif()
 
-add_definitions(-DEIGEN_DONT_ALIGN)
-
 #-------------------------------------------------------------------------------
 #add include directories
 set(COMMON_INCLUDE_DIRS
@@ -111,12 +114,18 @@ set(COMMON_INCLUDE_DIRS
     ${FreeImage_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIR}
     ${Boost_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR}
     ${CURL_INCLUDE_DIR}
     ${VLC_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/external
     ${CMAKE_CURRENT_SOURCE_DIR}/es-core/src
 )
+
+#add libCEC_INCLUDE_DIR
+if(DEFINED libCEC_FOUND)
+    LIST(APPEND COMMON_INCLUDE_DIRS
+        ${libCEC_INCLUDE_DIR}
+    )
+endif()
 
 #add ALSA for Linux
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -161,12 +170,25 @@ set(COMMON_LIBRARIES
     ${Boost_LIBRARIES}
     ${FREETYPE_LIBRARIES}
     ${FreeImage_LIBRARIES}
-	${SDL2_LIBRARY}
+    ${SDL2_LIBRARY}
     ${CURL_LIBRARIES}
     ${VLC_LIBRARIES}
     pugixml
     nanosvg
 )
+
+#add libCEC_LIBRARIES
+if(DEFINED libCEC_FOUND)
+if(DEFINED BCMHOST)
+    LIST(APPEND COMMON_LIBRARIES
+        vchiq_arm
+    )
+endif()
+    LIST(APPEND COMMON_LIBRARIES
+        dl
+        ${libCEC_LIBRARIES}
+    )
+endif()
 
 #add ALSA for Linux
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -178,7 +200,7 @@ endif()
 if(DEFINED BCMHOST)
     LIST(APPEND COMMON_LIBRARIES
         bcm_host
-        EGL
+        brcmEGL
         ${OPENGLES_LIBRARIES}
     )
 else()

@@ -1,12 +1,13 @@
 #pragma once
+#ifndef ES_APP_FILE_DATA_H
+#define ES_APP_FILE_DATA_H
 
-#include <unordered_map>
-#include <string>
-#include <vector>
-#include <boost/filesystem.hpp>
 #include "MetaData.h"
+#include <boost/filesystem/path.hpp>
+#include <unordered_map>
 
 class SystemData;
+class Window;
 struct SystemEnvironmentData;
 
 enum FileType
@@ -118,3 +119,5 @@ private:
 };
 
 FileData::SortType getSortTypeFromString(std::string desc);
+
+#endif // ES_APP_FILE_DATA_H
